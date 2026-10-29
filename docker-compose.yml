@@ -1,0 +1,41 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pharmakon-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - DATABASE_URL=sqlite:////data/pharmakon.db
+      - OPENFDA_API_KEY=${OPENFDA_API_KEY:-}
+      - NCBI_API_KEY=${NCBI_API_KEY:-}
+      - NCBI_EMAIL=${NCBI_EMAIL:-opensource@pharmakon.dev}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-local-docker-dev-secret-key-32bytes}
+      - RATE_LIMIT_PER_MINUTE=${RATE_LIMIT_PER_MINUTE:-30}
+      - RATE_LIMIT_PER_DAY=${RATE_LIMIT_PER_DAY:-1000}
+      - CACHE_TTL_SECONDS=${CACHE_TTL_SECONDS:-3600}
+      - CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost:8000
+    volumes:
+      - pharmakon_data:/data
+    restart: unless-stopped
+
+  web:
+    image: node:20-alpine
+    container_name: pharmakon-web
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8000
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  pharmakon_data:
