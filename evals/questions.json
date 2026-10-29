@@ -1,0 +1,252 @@
+[
+  {
+    "id": "Q01",
+    "question": "Find completed Phase 3 clinical trials of Ozempic (semaglutide) for obesity in the United States.",
+    "expected_tool": "search_trials",
+    "expected_args": {
+      "condition": "obesity",
+      "drug": "Ozempic",
+      "phase": "PHASE3",
+      "status": "COMPLETED"
+    },
+    "expected_facts": ["NCT03548935", "STEP 1", "Novo Nordisk", "semaglutide"]
+  },
+  {
+    "id": "Q02",
+    "question": "What are the eligibility criteria, enrollment count, and primary outcomes for clinical trial NCT03548935?",
+    "expected_tool": "get_trial_details",
+    "expected_args": {
+      "nct_id": "NCT03548935"
+    },
+    "expected_facts": ["NCT03548935", "1961", "18 Years", "Week 68"]
+  },
+  {
+    "id": "Q03",
+    "question": "What are the top reported adverse reactions and seriousness breakdown for semaglutide in FDA FAERS?",
+    "expected_tool": "adverse_event_summary",
+    "expected_args": {
+      "drug": "semaglutide",
+      "limit": 10
+    },
+    "expected_facts": ["NAUSEA", "VOMITING", "31000", "40.0"]
+  },
+  {
+    "id": "Q04",
+    "question": "Look up the FDA product label boxed warning and contraindications for Ozempic.",
+    "expected_tool": "drug_label_lookup",
+    "expected_args": {
+      "drug": "Ozempic",
+      "sections": ["boxed_warning", "contraindications"]
+    },
+    "expected_facts": ["THYROID C-CELL TUMORS", "medullary thyroid carcinoma", "MEN 2"]
+  },
+  {
+    "id": "Q05",
+    "question": "Search PubMed for recent peer-reviewed literature on semaglutide and obesity in the last 5 years.",
+    "expected_tool": "literature_search",
+    "expected_args": {
+      "drug": "semaglutide",
+      "condition": "obesity",
+      "years": 5
+    },
+    "expected_facts": ["33567185", "10.1056/NEJMoa2032183", "New England Journal of Medicine"]
+  },
+  {
+    "id": "Q06",
+    "question": "Give me a complete drug safety brief for Ozempic combining FAERS adverse events, FDA label warnings, recalls, and PubMed papers.",
+    "expected_tool": "drug_safety_brief",
+    "expected_args": {
+      "drug": "Ozempic"
+    },
+    "expected_facts": ["semaglutide", "NAUSEA", "THYROID C-CELL TUMORS", "D-0192-2024", "33567185"]
+  },
+  {
+    "id": "Q07",
+    "question": "Search for recruiting Phase 2 clinical trials for type 2 diabetes.",
+    "expected_tool": "search_trials",
+    "expected_args": {
+      "condition": "type 2 diabetes",
+      "phase": "PHASE2",
+      "status": "RECRUITING"
+    },
+    "expected_facts": ["ClinicalTrials.gov API v2", "NCT03548935", "Informational only"]
+  },
+  {
+    "id": "Q08",
+    "question": "Retrieve full protocol and study arm details for study NCT03548935.",
+    "expected_tool": "get_trial_details",
+    "expected_args": {
+      "nct_id": "NCT03548935"
+    },
+    "expected_facts": ["INTERVENTIONAL", "PHASE3", "Semaglutide 2.4 mg"]
+  },
+  {
+    "id": "Q09",
+    "question": "Summarize the top FAERS adverse event reports and serious report percentage for Ozempic.",
+    "expected_tool": "adverse_event_summary",
+    "expected_args": {
+      "drug": "Ozempic",
+      "limit": 5
+    },
+    "expected_facts": ["NAUSEA", "DIARRHOEA", "PANCREATITIS", "12400"]
+  },
+  {
+    "id": "Q10",
+    "question": "What are the dosage and administration instructions on the FDA drug label for semaglutide?",
+    "expected_tool": "drug_label_lookup",
+    "expected_args": {
+      "drug": "semaglutide",
+      "sections": ["dosage_and_administration", "indications_and_usage"]
+    },
+    "expected_facts": ["0.25 mg once weekly", "0.5 mg once weekly", "SUBCUTANEOUS"]
+  },
+  {
+    "id": "Q11",
+    "question": "Find published PubMed articles discussing cardiovascular outcomes of semaglutide.",
+    "expected_tool": "literature_search",
+    "expected_args": {
+      "drug": "semaglutide",
+      "condition": "cardiovascular",
+      "years": 5
+    },
+    "expected_facts": ["37952199", "10.1056/NEJMoa2307563", "Lincoff AM"]
+  },
+  {
+    "id": "Q12",
+    "question": "Compile a comprehensive drug safety report for semaglutide across FDA FAERS, SPL labels, recalls, and PubMed.",
+    "expected_tool": "drug_safety_brief",
+    "expected_args": {
+      "drug": "semaglutide"
+    },
+    "expected_facts": ["1991302", "NAUSEA", "Class II", "37952199"]
+  },
+  {
+    "id": "Q13",
+    "question": "Search ClinicalTrials.gov for cardiovascular disease studies involving semaglutide.",
+    "expected_tool": "search_trials",
+    "expected_args": {
+      "condition": "cardiovascular disease",
+      "drug": "semaglutide"
+    },
+    "expected_facts": ["NCT04881760", "SOUL", "9650"]
+  },
+  {
+    "id": "Q14",
+    "question": "Check the secondary outcomes and site locations of clinical trial NCT03548935.",
+    "expected_tool": "get_trial_details",
+    "expected_args": {
+      "nct_id": "NCT03548935"
+    },
+    "expected_facts": ["Change in Waist Circumference", "Massachusetts General Hospital", "Boston"]
+  },
+  {
+    "id": "Q15",
+    "question": "How many serious vs non-serious adverse event reports are recorded in openFDA for semaglutide?",
+    "expected_tool": "adverse_event_summary",
+    "expected_args": {
+      "drug": "semaglutide",
+      "limit": 10
+    },
+    "expected_facts": ["12400", "18600", "openFDA FAERS"]
+  },
+  {
+    "id": "Q16",
+    "question": "Check the warnings and cautions section of the FDA label for Ozempic regarding pancreatitis and retinopathy.",
+    "expected_tool": "drug_label_lookup",
+    "expected_args": {
+      "drug": "Ozempic",
+      "sections": ["warnings_and_cautions"]
+    },
+    "expected_facts": ["Pancreatitis", "Diabetic Retinopathy", "Acute Kidney Injury"]
+  },
+  {
+    "id": "Q17",
+    "question": "Search PubMed papers from the last 5 years by Wilding on semaglutide weight loss.",
+    "expected_tool": "literature_search",
+    "expected_args": {
+      "drug": "semaglutide",
+      "condition": "overweight",
+      "years": 5
+    },
+    "expected_facts": ["Wilding JPH", "-14.9%", "33567185"]
+  },
+  {
+    "id": "Q18",
+    "question": "Generate an all-in-one safety overview for Wegovy / semaglutide including recalls and adverse events.",
+    "expected_tool": "drug_safety_brief",
+    "expected_args": {
+      "drug": "semaglutide"
+    },
+    "expected_facts": ["Lack of Assurance of Sterility", "D-0192-2024", "NAUSEA"]
+  },
+  {
+    "id": "Q19",
+    "question": "List clinical trials in Boston or Cleveland studying semaglutide.",
+    "expected_tool": "search_trials",
+    "expected_args": {
+      "drug": "semaglutide",
+      "location": "United States"
+    },
+    "expected_facts": ["Boston", "Cleveland Clinic", "NCT04881760"]
+  },
+  {
+    "id": "Q20",
+    "question": "What are the minimum age and sex eligibility requirements for trial NCT03548935?",
+    "expected_tool": "get_trial_details",
+    "expected_args": {
+      "nct_id": "NCT03548935"
+    },
+    "expected_facts": ["ALL", "18 Years", "ADULT"]
+  },
+  {
+    "id": "Q21",
+    "question": "Get the MedDRA preferred term counts for vomiting and pancreatitis reported with semaglutide.",
+    "expected_tool": "adverse_event_summary",
+    "expected_args": {
+      "drug": "semaglutide",
+      "limit": 10
+    },
+    "expected_facts": ["4815", "1120", "VOMITING", "PANCREATITIS"]
+  },
+  {
+    "id": "Q22",
+    "question": "Look up the FDA SPL adverse reactions section and manufacturer name for Ozempic.",
+    "expected_tool": "drug_label_lookup",
+    "expected_args": {
+      "drug": "Ozempic",
+      "sections": ["adverse_reactions"]
+    },
+    "expected_facts": ["Novo Nordisk Inc.", "nausea, vomiting, diarrhea", "OZEMPIC"]
+  },
+  {
+    "id": "Q23",
+    "question": "Find PubMed literature DOIs and abstracts for semaglutide studies published in NEJM.",
+    "expected_tool": "literature_search",
+    "expected_args": {
+      "drug": "semaglutide",
+      "condition": "obesity",
+      "years": 10
+    },
+    "expected_facts": ["10.1056/NEJMoa2032183", "10.1056/NEJMoa2307563", "PubMed"]
+  },
+  {
+    "id": "Q24",
+    "question": "Provide a complete safety brief for Ozempic so I can review boxed warnings, FAERS counts, and literature together.",
+    "expected_tool": "drug_safety_brief",
+    "expected_args": {
+      "drug": "Ozempic"
+    },
+    "expected_facts": ["THYROID C-CELL TUMORS", "31000", "33567185", "Informational only"]
+  },
+  {
+    "id": "Q25",
+    "question": "Search ClinicalTrials.gov for Phase 3 completed trials of semaglutide and return NCT IDs.",
+    "expected_tool": "search_trials",
+    "expected_args": {
+      "drug": "semaglutide",
+      "phase": "PHASE3",
+      "status": "COMPLETED"
+    },
+    "expected_facts": ["NCT03548935", "PHASE3", "COMPLETED"]
+  }
+]

@@ -1,0 +1,1 @@
+"""Pharmakon MCP evaluation suite."""
