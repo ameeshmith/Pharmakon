@@ -1,0 +1,5 @@
+PubMed / NCBI E-utilities Terms Notification
+Timestamp: 2026-10-29T21:45:00+05:30
+Please review the PubMed disclaimer at https://pubmed.ncbi.nlm.nih.gov/disclaimer/ and NCBI policies at https://www.ncbi.nlm.nih.gov/home/about/policies/.
+Always check the individual license of papers retrieved via PubMed for any reuse restrictions.
+

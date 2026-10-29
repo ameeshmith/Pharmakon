@@ -1,0 +1,5 @@
+openFDA Terms and License Notification
+Timestamp: 2026-10-29T21:45:00+05:30
+Please review the openFDA API terms of service at https://open.fda.gov/apis/ and license terms at https://open.fda.gov/license.
+Data provided by the U.S. Food and Drug Administration via openFDA. Do not rely on openFDA to make decisions regarding medical care.
+
