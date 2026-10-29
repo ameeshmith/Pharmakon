@@ -1,18 +1,17 @@
-"""FastMCP server instance and MCP tool registrations over Streamable HTTP."""
+"""FastMCP server instance and all 6 MCP tool registrations over Streamable HTTP."""
 
 from __future__ import annotations
 
+from contextvars import ContextVar
 from typing import Annotated, Any
 
 from fastmcp import FastMCP
 from pydantic import Field
 
-from server.tools.trials import (
-    get_trial_details as _get_trial_details,
-)
-from server.tools.trials import (
-    search_trials as _search_trials,
-)
+from server.tool_registry import execute_tool_by_name
+
+# Context variable set by MCPAuthMiddleware so MCP tool calls log against the caller's APIKey
+current_mcp_api_key_id: ContextVar[int | None] = ContextVar("current_mcp_api_key_id", default=None)
 
 mcp = FastMCP(
     name="Pharmakon — Drug Safety & Clinical Trials MCP",
@@ -80,13 +79,17 @@ async def tool_search_trials(
         ),
     ] = 10,
 ) -> dict[str, Any]:
-    return await _search_trials(
-        condition=condition,
-        drug=drug,
-        phase=phase,
-        status=status,
-        location=location,
-        limit=limit,
+    return await execute_tool_by_name(
+        "search_trials",
+        {
+            "condition": condition,
+            "drug": drug,
+            "phase": phase,
+            "status": status,
+            "location": location,
+            "limit": limit,
+        },
+        api_key_id=current_mcp_api_key_id.get(),
     )
 
 
@@ -94,15 +97,152 @@ async def tool_search_trials(
     name="get_trial_details",
     description=(
         "Retrieve comprehensive protocol, eligibility criteria, study arms, interventions, "
-        "primary/secondary outcomes, and site locations for a specific clinical trial by its NCT ID (e.g. 'NCT04280705')."
+        "primary/secondary outcomes, and site locations for a specific clinical trial by its NCT ID (e.g. 'NCT03548935')."
     ),
 )
 async def tool_get_trial_details(
     nct_id: Annotated[
         str,
         Field(
-            description="ClinicalTrials.gov identifier in 'NCT########' format (e.g., 'NCT04280705')."
+            description="ClinicalTrials.gov identifier in 'NCT########' format (e.g., 'NCT03548935')."
         ),
     ],
 ) -> dict[str, Any]:
-    return await _get_trial_details(nct_id=nct_id)
+    return await execute_tool_by_name(
+        "get_trial_details",
+        {"nct_id": nct_id},
+        api_key_id=current_mcp_api_key_id.get(),
+    )
+
+
+@mcp.tool(
+    name="adverse_event_summary",
+    description=(
+        "Query openFDA FAERS (/drug/event.json) for a drug's top reported MedDRA adverse reactions, "
+        "total report counts, and seriousness breakdown (serious vs. non-serious percentages). "
+        "Normalizes brand/generic drug names via RxNorm before querying."
+    ),
+)
+async def tool_adverse_event_summary(
+    drug: Annotated[
+        str,
+        Field(
+            description="Drug name (brand or generic, e.g. 'semaglutide', 'Ozempic', 'atorvastatin')."
+        ),
+    ],
+    limit: Annotated[
+        int,
+        Field(
+            default=10,
+            ge=1,
+            le=50,
+            description="Maximum number of top MedDRA reaction terms to return (1-50, default 10).",
+        ),
+    ] = 10,
+) -> dict[str, Any]:
+    return await execute_tool_by_name(
+        "adverse_event_summary",
+        {"drug": drug, "limit": limit},
+        api_key_id=current_mcp_api_key_id.get(),
+    )
+
+
+@mcp.tool(
+    name="drug_label_lookup",
+    description=(
+        "Retrieve official FDA Structured Product Labeling (/drug/label.json) sections for a drug, "
+        "including boxed warnings, warnings and cautions, contraindications, dosage and administration, "
+        "indications, and adverse reactions."
+    ),
+)
+async def tool_drug_label_lookup(
+    drug: Annotated[
+        str,
+        Field(description="Drug name (brand or generic, e.g. 'warfarin', 'lisinopril')."),
+    ],
+    sections: Annotated[
+        list[str] | None,
+        Field(
+            default=None,
+            description=(
+                "Optional list of label section names to extract (e.g. ['boxed_warning', 'warnings', "
+                "'contraindications', 'dosage_and_administration']). Omit for default safety sections."
+            ),
+        ),
+    ] = None,
+) -> dict[str, Any]:
+    return await execute_tool_by_name(
+        "drug_label_lookup",
+        {"drug": drug, "sections": sections},
+        api_key_id=current_mcp_api_key_id.get(),
+    )
+
+
+@mcp.tool(
+    name="literature_search",
+    description=(
+        "Search peer-reviewed biomedical literature on PubMed via NCBI E-utilities (esearch + efetch) "
+        "for a drug and/or clinical condition within a recent publication window, returning PMIDs, "
+        "titles, journals, publication dates, DOIs, and abstract snippets."
+    ),
+)
+async def tool_literature_search(
+    drug: Annotated[
+        str | None,
+        Field(
+            default=None,
+            description="Drug or active ingredient name (e.g. 'pembrolizumab', 'metformin').",
+        ),
+    ] = None,
+    condition: Annotated[
+        str | None,
+        Field(
+            default=None,
+            description="Disease, clinical condition, or safety topic (e.g. 'melanoma', 'lactic acidosis').",
+        ),
+    ] = None,
+    years: Annotated[
+        int | str | None,
+        Field(
+            default=5,
+            description="Lookback window in years (e.g. 5 for last 5 years, or range '2020-2025').",
+        ),
+    ] = 5,
+    limit: Annotated[
+        int,
+        Field(
+            default=10,
+            ge=1,
+            le=25,
+            description="Maximum number of PubMed articles to return (1-25, default 10).",
+        ),
+    ] = 10,
+) -> dict[str, Any]:
+    return await execute_tool_by_name(
+        "literature_search",
+        {"drug": drug, "condition": condition, "years": years, "limit": limit},
+        api_key_id=current_mcp_api_key_id.get(),
+    )
+
+
+@mcp.tool(
+    name="drug_safety_brief",
+    description=(
+        "Compile a comprehensive, compact Drug Safety Brief combining RxNorm drug normalization, "
+        "openFDA FAERS adverse event summary, FDA SPL label warnings/contraindications/dosage, "
+        "openFDA drug recall enforcement reports, and recent PubMed safety literature in one report."
+    ),
+)
+async def tool_drug_safety_brief(
+    drug: Annotated[
+        str,
+        Field(
+            description="Brand or generic drug name to generate a complete safety brief for (e.g. 'metformin', 'Ozempic')."
+        ),
+    ],
+) -> dict[str, Any]:
+    return await execute_tool_by_name(
+        "drug_safety_brief",
+        {"drug": drug},
+        api_key_id=current_mcp_api_key_id.get(),
+    )

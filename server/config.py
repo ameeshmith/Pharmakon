@@ -35,14 +35,10 @@ class Settings(BaseSettings):
 
     # Optional NCBI E-utilities polite credentials
     ncbi_api_key: str = Field(default="", validation_alias="NCBI_API_KEY")
-    ncbi_email: str = Field(
-        default="opensource@pharmakon.dev", validation_alias="NCBI_EMAIL"
-    )
+    ncbi_email: str = Field(default="opensource@pharmakon.dev", validation_alias="NCBI_EMAIL")
 
     # Database URL (SQLite by default, swappable for PostgreSQL)
-    database_url: str = Field(
-        default="sqlite:///./pharmakon.db", validation_alias="DATABASE_URL"
-    )
+    database_url: str = Field(default="sqlite:///./pharmakon.db", validation_alias="DATABASE_URL")
 
     # JWT Session config
     jwt_secret_key: str = Field(
@@ -53,9 +49,7 @@ class Settings(BaseSettings):
     jwt_expire_minutes: int = Field(default=1440, validation_alias="JWT_EXPIRE_MINUTES")
 
     # Rate limits per API key
-    rate_limit_per_minute: int = Field(
-        default=30, validation_alias="RATE_LIMIT_PER_MINUTE"
-    )
+    rate_limit_per_minute: int = Field(default=30, validation_alias="RATE_LIMIT_PER_MINUTE")
     rate_limit_per_day: int = Field(default=1000, validation_alias="RATE_LIMIT_PER_DAY")
 
     # Upstream response cache TTL
